@@ -54,6 +54,7 @@ class MapInstanced;
 class BattlegroundMap;
 class InstanceMap;
 class Transport;
+class Eluna;
 namespace Trinity { struct ObjectUpdater; }
 
 struct ScriptAction
@@ -261,6 +262,7 @@ typedef std::unordered_map<uint32 /*zoneId*/, ZoneDynamicInfo> ZoneDynamicInfoMa
 class Map : public GridRefManager<NGridType>
 {
     friend class MapReference;
+    friend class Eluna;
     public:
         Map(uint32 id, time_t, uint32 InstanceId, uint8 SpawnMode, Map* _parent = NULL);
         virtual ~Map();
@@ -517,6 +519,10 @@ class Map : public GridRefManager<NGridType>
 
         void UpdateAreaDependentAuras();
 
+#ifdef ELUNA
+        Eluna* GetEluna() const { return luadata; }
+#endif
+
     private:
         void LoadMapAndVMap(int gx, int gy);
         void LoadVMap(int gx, int gy);
@@ -663,6 +669,10 @@ class Map : public GridRefManager<NGridType>
 
         ZoneDynamicInfoMap _zoneDynamicInfo;
         uint32 _defaultLight;
+
+#ifdef ELUNA
+        Eluna* luadata;
+#endif
 };
 
 enum InstanceResetMethod
