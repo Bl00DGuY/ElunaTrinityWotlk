@@ -1141,6 +1141,7 @@ class Player : public Unit, public GridObject<Player>
         void SetPvPDeath(bool on) { if (on) m_ExtraFlags |= PLAYER_EXTRA_PVP_DEATH; else m_ExtraFlags &= ~PLAYER_EXTRA_PVP_DEATH; }
 
         void GiveXP(uint32 xp, Unit* victim, float group_rate=1.0f);
+		void GiveXPEluna(uint32 xp, Unit* victim, bool triggerHook, float group_rate = 1.0f);
         void GiveLevel(uint8 level);
 
         void InitStatsForLevel(bool reapplyMods = false);

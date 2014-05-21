@@ -3002,6 +3002,67 @@ void Player::GiveXP(uint32 xp, Unit* victim, float group_rate)
     SetUInt32Value(PLAYER_XP, newXP);
 }
 
+// Special GiveXP For Eluna "GiveXP" with Hook Trigger
+void Player::GiveXPEluna(uint32 xp, Unit* victim, bool triggerHook, float group_rate)
+{
+	if (xp < 1)
+		return;
+
+	if (!IsAlive() && !GetBattlegroundId())
+		return;
+
+	if (HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_NO_XP_GAIN))
+		return;
+
+	if (victim && victim->GetTypeId() == TYPEID_UNIT && !victim->ToCreature()->hasLootRecipient())
+		return;
+
+	uint8 level = getLevel();
+
+	if (triggerHook)
+		sScriptMgr->OnGivePlayerXP(this, xp, victim);
+
+	// Favored experience increase START
+	uint32 zone = GetZoneId();
+	float favored_exp_mult = 0;
+	if ((HasAura(32096) || HasAura(32098)) && (zone == 3483 || zone == 3562 || zone == 3836 || zone == 3713 || zone == 3714))
+		favored_exp_mult = 0.05f; // Thrallmar's Favor and Honor Hold's Favor
+	xp = uint32(xp * (1 + favored_exp_mult));
+	// Favored experience increase END
+
+	// XP to money conversion processed in Player::RewardQuest
+	if (level >= sWorld->getIntConfig(CONFIG_MAX_PLAYER_LEVEL))
+		return;
+
+	uint32 bonus_xp = 0;
+	bool recruitAFriend = GetsRecruitAFriendBonus(true);
+
+	// RaF does NOT stack with rested experience
+	if (recruitAFriend)
+		bonus_xp = 2 * xp; // xp + bonus_xp must add up to 3 * xp for RaF; calculation for quests done client-side
+	else
+		bonus_xp = victim ? GetXPRestBonus(xp) : 0; // XP resting bonus
+
+	SendLogXPGain(xp, victim, bonus_xp, recruitAFriend, group_rate);
+
+	uint32 curXP = GetUInt32Value(PLAYER_XP);
+	uint32 nextLvlXP = GetUInt32Value(PLAYER_NEXT_LEVEL_XP);
+	uint32 newXP = curXP + xp + bonus_xp;
+
+	while (newXP >= nextLvlXP && level < sWorld->getIntConfig(CONFIG_MAX_PLAYER_LEVEL))
+	{
+		newXP -= nextLvlXP;
+
+		if (level < sWorld->getIntConfig(CONFIG_MAX_PLAYER_LEVEL))
+			GiveLevel(level + 1);
+
+		level = getLevel();
+		nextLvlXP = GetUInt32Value(PLAYER_NEXT_LEVEL_XP);
+	}
+
+	SetUInt32Value(PLAYER_XP, newXP);
+}
+
 // Update player to next level
 // Current player experience not update (must be update by caller)
 void Player::GiveLevel(uint8 level)
