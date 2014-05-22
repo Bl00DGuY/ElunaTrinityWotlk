@@ -3185,19 +3185,8 @@ void Player::InitTalentForLevel()
             m_activeSpec = 0;
         }
 
-        uint32 talentPointsForLevel = CalculateTalentsPoints();
-
-        // if used more that have then reset
-        //if (m_usedTalentCount > talentPointsForLevel)
-        //{
-        //    if (!GetSession()->HasPermission(rbac::RBAC_PERM_SKIP_CHECK_MORE_TALENTS_THAN_ALLOWED))
-        //        resetTalents(true);
-        //    else
-        //        SetFreeTalentPoints(0);
-        //}
-        // else update amount of free points
-        //else
-        //    SetFreeTalentPoints(talentPointsForLevel - m_usedTalentCount);
+        uint32 talentPointsForLevel = CalculateTalentsPoints();     
+        SetFreeTalentPoints(talentPointsForLevel - m_usedTalentCount);
     }
 
     if (!GetSession()->PlayerLoading())
