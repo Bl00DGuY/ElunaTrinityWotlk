@@ -184,7 +184,7 @@ class boss_keleseth : public CreatureScript
                     {
                         case EVENT_SUMMON_SKELETONS:
                             Talk(SAY_SUMMON_SKELETONS);
-                            SummonSkeletons();
+                            //SummonSkeletons();
                             break;
                         case EVENT_SHADOWBOLT:
                             DoCastVictim(SPELL_SHADOWBOLT);
@@ -196,9 +196,9 @@ class boss_keleseth : public CreatureScript
                                 Talk(SAY_FROST_TOMB);
                                 Talk(SAY_FROST_TOMB_EMOTE, target);
 
-                                DoCast(target, SPELL_FROST_TOMB_STUN, true);
+                                //DoCast(target, SPELL_FROST_TOMB_STUN, true);
                                 // checked from sniffs - the player casts the spell
-                                target->CastSpell(target, SPELL_FROST_TOMB_SUMMON, true);
+                                //target->CastSpell(target, SPELL_FROST_TOMB_SUMMON, true);
                             }
                             events.ScheduleEvent(EVENT_FROST_TOMB, urand(14, 19) * IN_MILLISECONDS);
                             break;
